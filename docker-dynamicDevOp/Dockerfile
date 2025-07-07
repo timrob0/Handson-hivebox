@@ -1,13 +1,11 @@
-FROM alpine:3.19
-
-# Install python3 and bash (optional, if you want bash)
-RUN apk add --no-cache python3
+FROM python:3.11-alpine
 
 WORKDIR /app
 
 COPY main.py .
 COPY version.txt .
 
-RUN chmod +x main.py
+# Install FastAPI CLI tool (installs uvicorn too)
+RUN pip install fastapi-cli fastapi
 
-ENTRYPOINT ["./main.py"]
+ENTRYPOINT ["fastapi", "dev", "main.py", "--host", "0.0.0.0", "--port", "8000"]
