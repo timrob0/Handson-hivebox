@@ -1,25 +1,71 @@
 #!/usr/bin/env python3
+"""
+Main FastAPI application for Hivebox DevOps Hands-On Project.
 
+This module provides a FastAPI application with endpoints to:
+- Retrieve the application version from a version.txt file.
+- Calculate the average temperature from a set of OpenSenseMap 
+
+Endpoints:
+- GET /version: Returns the application version as a string.
+- GET /temperature: Returns the average temperature (in °C) from the configured OpenSenseMap boxes.
+
+Author: [Your Name]
+"""
+
+from datetime import datetime, timedelta, timezone
 from fastapi import FastAPI, HTTPException
 import requests
-from datetime import datetime, timedelta, timezone
-
-
 
 app = FastAPI()
 
 @app.get("/version")
 def get_app_version() -> str:
+    """
+    Reads the application version from 'version.txt'.
+
+    Returns:
+        str: The version string, or 'Unknown Version' if the file is not found.
+    """
     try:
-        with open("version.txt", "r") as f:
+        with open("version.txt", "r", encoding="utf-8") as f:
             return f.read().strip()
     except FileNotFoundError:
         return "Unknown Version"
+
 def read_version():
+    """
+    Returns the application version in a dictionary format.
+
+    Returns:
+        dict: Dictionary containing the version.
+    """
     return {"version": get_app_version()}
+
+def extract_recent_temperature(sensor, now):
+    """
+    Extracts the temperature value from a sensor if the measurement is within the last hour.
+    Returns the value as float or None.
+    """
+    if "temperatur" in sensor.get("title", "").lower():
+        last = sensor.get("lastMeasurement")
+        if last:
+            timestamp = datetime.fromisoformat(last["createdAt"].replace("Z", "+00:00"))
+            if now - timestamp <= timedelta(hours=1):
+                return float(last["value"])
+    return None
 
 @app.get("/temperature")
 def average_temperature():
+    """
+    Calculates the average temperature from a set of OpenSenseMap sensor boxes.
+
+    Only considers temperature measurements from the last hour. If no recent data is found,
+    returns a 404 error.
+
+    Returns:
+        dict: Dictionary containing the average temperature, unit, and number of sources counted.
+    """
     box_ids = [
         "5ade1acf223bd80019a1011c",
         "5c21ff8f919bf8001adf2488",
@@ -36,16 +82,12 @@ def average_temperature():
             box = response.json()
 
             for sensor in box.get("sensors", []):
-                if "temperatur" in sensor.get("title", "").lower():
-                    last = sensor.get("lastMeasurement")
-                    if last:
-                        timestamp = datetime.fromisoformat(last["createdAt"].replace("Z", "+00:00"))
-                        if now - timestamp <= timedelta(hours=1):
-                            value = float(last["value"])
-                            temperatures.append(value)
+                temp = extract_recent_temperature(sensor, now)
+                if temp is not None:
+                    temperatures.append(temp)
                     break  # stop once we find the first valid temperature sensor
 
-        except:
+        except (requests.RequestException, ValueError, KeyError):
             continue  # skip any box that fails
 
     if not temperatures:
@@ -59,6 +101,9 @@ def average_temperature():
     }
 
 def main():
+    """
+    Main function to run the FastAPI app and print the version.
+    """
     version = get_app_version()
     print(f"Version: {version}")
 
