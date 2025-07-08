@@ -14,8 +14,8 @@ Author: [Your Name]
 """
 
 from datetime import datetime, timedelta, timezone
-import requests
 from fastapi import FastAPI, HTTPException
+import requests
 
 app = FastAPI()
 
