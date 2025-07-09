@@ -193,5 +193,4 @@ class MockResponse:
         ''' Raises an HTTPError if the response status code is not 200
         This method checks the status code and raises an exception if it is not 200.'''
         if self.status_code != 200:
-            import requests
             raise requests.HTTPError("HTTP error")
