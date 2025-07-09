@@ -80,19 +80,10 @@ The project aims to cover the whole Software Development Life Cycle (SDLC). That
 
 ```python
 def main():
-    """
-    Main function that reads and prints the app version.
-    """
     version = get_app_version()
     print(f"Version: {version}")
 
 def get_app_version() -> str:
-    """
-    Reads the application version from 'version.txt'.
-
-    Returns:
-        str: The version string, or 'Unknown Version' if the file is not found.
-    """
     try:
         with open("version.txt", "r", encoding="utf-8") as f:
             return f.read().strip()
@@ -139,14 +130,14 @@ docker run --rm hivebox-app
 
 This phase focused on building core app functionality, enforcing clean code practices, and setting up continuous integration for quality and reliability.
 
-### Tools & Setup
+### 3.1 Tools & Setup
 
 - Used **Hadolint** (with VS Code extension) to lint Dockerfiles.  
 - Used **Pylint** (with VS Code extension) to lint Python code.  
 - Adopted **Conventional Commits** for meaningful Git commit messages.  
 - Explored and integrated the **openSenseMap API** for sensor data.
 
-### Code Implementation
+### 3.2 Code Implementation
 
 Implemented FastAPI endpoints to support core functionality:
 
@@ -237,17 +228,17 @@ def average_temperature():
 
 </details>
 
-### Containers & Best Practices
+### 3.3 Containers & Best Practices
 
 - Lightweight base image
 - defined working directory
 - .dockerignore to reduce build
 
-### Continuous Integration
+### 3.4 Continuous Integration
 
 - Used GitHub Actions with pylint, hadolint, dockerbuild, pytest, and OpenSSF Scorecard.
 
-### Testing
+### 3.5 Testing
 
 - Used **pytest** and FastAPI's **TestClient** for testing.
 - Verified `/version` endpoint returns the correct version or `"Unknown Version"` if `version.txt` is missing.
@@ -259,7 +250,7 @@ def average_temperature():
 - Cleaned up `version.txt` after tests to maintain test isolation.
 - Created a `MockResponse` class to simulate HTTP responses for reliable, controlled testing.
 
-### Problems faced
+### 3.6 Problems faced
 - Started trying to get the average of every sensor box in Opensense which crashed the program...next time I will be clearer about the requirments (You only need 3 boxes).
 - Linting required a heap of docstrings to be added which I was not aware of.
 - Needing to open the ports for communication with docker file and my localhost.
