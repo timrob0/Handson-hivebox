@@ -24,7 +24,7 @@ load_dotenv()
 # Load environment variables
 OPENSENSEMAP_API_URL = os.getenv("OPENSENSEMAP_API_URL", "https://api.opensensemap.org")
 REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "10"))
-box_ids = os.getenv("OPENSENSEMAP_BOX_IDS", "0,0,0").split(",")
+box_ids = os.getenv("OPENSENSEMAP_BOX_IDS", "5ade1acf223bd80019a1011c,5c21ff8f919bf8001adf2488,5ade1acf223bd80019a1011c".split(","))
 
 if not box_ids or box_ids == ["0", "0", "0"]:
     raise ValueError("No valid OpenSenseMap box IDs provided in environment variables.")
@@ -43,7 +43,7 @@ def get_app_version() -> str:
         str: The version string, or 'Unknown Version' if the file is not found.
     """
     try:
-        with open("version.txt", "r", encoding="utf-8") as f:
+        with open(VERSION_FILE, "r", encoding="utf-8") as f:
             return f.read().strip()
     except FileNotFoundError:
         return "Unknown Version"
