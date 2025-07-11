@@ -14,9 +14,24 @@ Author: [Your Name]
 """
 
 from datetime import datetime, timedelta, timezone
+import os
 from fastapi import FastAPI, HTTPException
 import requests
+from dotenv import load_dotenv
 
+load_dotenv()
+
+# Load environment variables
+OPENSENSEMAP_API_URL = os.getenv("OPENSENSEMAP_API_URL", "https://api.opensensemap.org")
+REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "10"))
+box_ids = os.getenv("OPENSENSEMAP_BOX_IDS", "0,0,0").split(",")
+
+if not box_ids or box_ids == ["0", "0", "0"]:
+    raise ValueError("No valid OpenSenseMap box IDs provided in environment variables.")
+
+VERSION_FILE = os.getenv("VERSION_FILE", "version.txt")
+
+# Initialize FastAPI application
 app = FastAPI()
 
 @app.get("/version")
@@ -66,18 +81,13 @@ def average_temperature():
     Returns:
         dict: Dictionary containing the average temperature, unit, and number of sources counted.
     """
-    box_ids = [
-        "5ade1acf223bd80019a1011c",
-        "5c21ff8f919bf8001adf2488",
-        "5ade1acf223bd80019a1011c"
-    ]
 
     temperatures = []
     now = datetime.now(timezone.utc)
 
     for box_id in box_ids:
         try:
-            response = requests.get(f"https://api.opensensemap.org/boxes/{box_id}", timeout=10)
+            response = requests.get(f"{OPENSENSEMAP_API_URL}/boxes/{box_id}", timeout=REQUEST_TIMEOUT)
             response.raise_for_status()
             box = response.json()
 
