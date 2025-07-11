@@ -36,7 +36,7 @@ box_ids = os.getenv(
 if not box_ids or box_ids == ["0", "0", "0"]:
     raise ValueError("No valid OpenSenseMap box IDs provided in environment variables.")
 
-VERSION_FILE = os.getenv("VERSION_FILE", "version.txt")
+VERSION_FILE = os.getenv("VERSION_FILE", "v1.0.0")
 
 # Initialize FastAPI application
 app = FastAPI()

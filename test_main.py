@@ -12,34 +12,29 @@ from datetime import datetime, timezone, timedelta
 from fastapi.testclient import TestClient
 import pytest
 import requests
-from main import app, extract_recent_temperature
-# Create a test client for the FastAPI app
+from main import app, extract_recent_temperature, VERSION_FILE
 
 client = TestClient(app)
 
 @pytest.fixture(autouse=True)
 def cleanup_version_file():
-    ''' Remove version.txt after each test if it exists
-    If it exists, it will be removed to ensure a clean state for each test. 
-    '''
+    ''' Remove VERSION_FILE after each test if it exists '''
     yield
-    if os.path.exists("version.txt"):
-        os.remove("version.txt")
+    if os.path.exists(VERSION_FILE):
+        os.remove(VERSION_FILE)
 
 def test_get_app_version_file_exists():
-    ''' Test retrieving the application version from version.txt
-    This test checks if the version is correctly read from the file.'''
-    with open("version.txt", "w", encoding="utf-8") as f:
+    ''' Test retrieving the application version from VERSION_FILE '''
+    with open(VERSION_FILE, "w", encoding="utf-8") as f:
         f.write("1.2.3")
     response = client.get("/version")
     assert response.status_code == 200
     assert response.text.strip('"') == "1.2.3"
 
 def test_get_app_version_file_missing():
-    ''' Test retrieving the application version when version.txt is missing
-    This test checks if the default "Unknown Version" is returned when the file does not exist'''
-    if os.path.exists("version.txt"):
-        os.remove("version.txt")
+    ''' Test retrieving the application version when VERSION_FILE is missing '''
+    if os.path.exists(VERSION_FILE):
+        os.remove(VERSION_FILE)
     response = client.get("/version")
     assert response.status_code == 200
     assert response.text.strip('"') == "Unknown Version"
