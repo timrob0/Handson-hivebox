@@ -24,7 +24,14 @@ load_dotenv()
 # Load environment variables
 OPENSENSEMAP_API_URL = os.getenv("OPENSENSEMAP_API_URL", "https://api.opensensemap.org")
 REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "10"))
-box_ids = os.getenv("OPENSENSEMAP_BOX_IDS", "5ade1acf223bd80019a1011c,5c21ff8f919bf8001adf2488,5ade1acf223bd80019a1011c".split(","))
+box_ids = os.getenv(
+    "OPENSENSEMAP_BOX_IDS",
+    (
+        "5ade1acf223bd80019a1011c,"
+        "5c21ff8f919bf8001adf2488,"
+        "5ade1acf223bd80019a1011c"
+    )
+).split(",")
 
 if not box_ids or box_ids == ["0", "0", "0"]:
     raise ValueError("No valid OpenSenseMap box IDs provided in environment variables.")
@@ -87,7 +94,10 @@ def average_temperature():
 
     for box_id in box_ids:
         try:
-            response = requests.get(f"{OPENSENSEMAP_API_URL}/boxes/{box_id}", timeout=REQUEST_TIMEOUT)
+            response = requests.get(
+                f"{OPENSENSEMAP_API_URL}/boxes/{box_id}",
+                timeout=REQUEST_TIMEOUT
+            )
             response.raise_for_status()
             box = response.json()
 
@@ -97,11 +107,18 @@ def average_temperature():
                     temperatures.append(temp)
                     break  # stop once we find the first valid temperature sensor
 
-        except (requests.RequestException, ValueError, KeyError):
+        except (
+            requests.RequestException,
+            ValueError,
+            KeyError
+        ):
             continue  # skip any box that fails
 
     if not temperatures:
-        raise HTTPException(status_code=404, detail="No recent temperature data found")
+        raise HTTPException(
+            status_code=404,
+            detail="No recent temperature data found"
+        )
 
     avg_temp = sum(temperatures) / len(temperatures)
     return {
