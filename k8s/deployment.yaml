@@ -1,0 +1,32 @@
+apiVersion: apps/v1                      # Kubernetes API version for Deployment
+kind: Deployment                         # Resource type is Deployment
+metadata:
+  name: hivebox-app                      # Name of the Deployment
+  labels:
+    app: hivebox                        # Label to identify pods managed by this Deployment
+
+spec:
+  replicas: 1                           # Number of pod replicas to run
+  selector:
+    matchLabels:
+      app: hivebox                     # Select pods with this label for managing
+  template:
+    metadata:
+      labels:
+        app: hivebox                   # Labels assigned to pods created by this Deployment
+    spec:
+      containers:
+        - name: hivebox                # Container name inside pod
+          image: hivebox:latest         # Docker image to deploy
+          ports:
+            - containerPort: 8000       # Port that container listens on
+          env:                         # Environment variables injected into container
+            - name: OPENSENSEMAP_API_URL
+              value: "https://api.opensensemap.org"
+            - name: OPENSENSEMAP_BOX_IDS
+              value: >
+                5ade1acf223bd80019a1011c,
+                5c21ff8f919bf8001adf2488,
+                5ade1acf223bd80019a1011c
+            - name: VERSION_FILE
+              value: "v0.0.1"

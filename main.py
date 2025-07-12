@@ -3,8 +3,8 @@
 Main FastAPI application for Hivebox DevOps Hands-On Project.
 
 This module provides a FastAPI application with endpoints to:
-- Retrieve the application version from a version.txt file.
-- Calculate the average temperature from a set of OpenSenseMap 
+- Retrieve the application version from env.
+- Calculate the average temperature from a set of OpenSenseMap
 
 Endpoints:
 - GET /version: Returns the application version as a string.
@@ -30,7 +30,7 @@ box_ids = os.getenv(
         "5ade1acf223bd80019a1011c,"
         "5c21ff8f919bf8001adf2488,"
         "5ade1acf223bd80019a1011c"
-    )
+    ),
 ).split(",")
 
 if not box_ids or box_ids == ["0", "0", "0"]:
@@ -41,10 +41,11 @@ VERSION_FILE = os.getenv("VERSION_FILE", "v1.0.0")
 # Initialize FastAPI application
 app = FastAPI()
 
+
 @app.get("/version")
 def get_app_version() -> str:
     """
-    Reads the application version from 'version.txt'.
+    Reads the application version from env.
 
     Returns:
         str: The version string, or 'Unknown Version' if the file is not found.
@@ -55,6 +56,7 @@ def get_app_version() -> str:
     except FileNotFoundError:
         return "Unknown Version"
 
+
 def read_version():
     """
     Returns the application version in a dictionary format.
@@ -63,6 +65,7 @@ def read_version():
         dict: Dictionary containing the version.
     """
     return {"version": get_app_version()}
+
 
 def extract_recent_temperature(sensor, now):
     """
@@ -76,6 +79,7 @@ def extract_recent_temperature(sensor, now):
             if now - timestamp <= timedelta(hours=1):
                 return float(last["value"])
     return None
+
 
 @app.get("/temperature")
 def average_temperature():
@@ -95,8 +99,7 @@ def average_temperature():
     for box_id in box_ids:
         try:
             response = requests.get(
-                f"{OPENSENSEMAP_API_URL}/boxes/{box_id}",
-                timeout=REQUEST_TIMEOUT
+                f"{OPENSENSEMAP_API_URL}/boxes/{box_id}", timeout=REQUEST_TIMEOUT
             )
             response.raise_for_status()
             box = response.json()
@@ -107,25 +110,19 @@ def average_temperature():
                     temperatures.append(temp)
                     break  # stop once we find the first valid temperature sensor
 
-        except (
-            requests.RequestException,
-            ValueError,
-            KeyError
-        ):
+        except (requests.RequestException, ValueError, KeyError):
             continue  # skip any box that fails
 
     if not temperatures:
-        raise HTTPException(
-            status_code=404,
-            detail="No recent temperature data found"
-        )
+        raise HTTPException(status_code=404, detail="No recent temperature data found")
 
     avg_temp = sum(temperatures) / len(temperatures)
     return {
         "average_temperature": round(avg_temp, 2),
         "unit": "°C",
-        "sources_counted": len(temperatures)
+        "sources_counted": len(temperatures),
     }
+
 
 def main():
     """
@@ -133,6 +130,7 @@ def main():
     """
     version = get_app_version()
     print(f"Version: {version}")
+
 
 if __name__ == "__main__":
     main()

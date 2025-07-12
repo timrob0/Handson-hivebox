@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1       # API version for Ingress resource
+kind: Ingress                         # Resource type is Ingress
+metadata:
+  name: hivebox-ingress               # Name of Ingress resource
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /   # Rewrite incoming paths to root for backend
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /                  # Match all paths starting with /
+            pathType: Prefix         # Use prefix matching
+            backend:
+              service:
+                name: hivebox-service  # Route to hivebox-service
+                port:
+                  number: 80           # Service port
