@@ -1,0 +1,11 @@
+apiVersion: v1                         # Kubernetes core API version for Service
+kind: Service                         # Resource type is Service
+metadata:
+  name: hivebox-service               # Service name
+spec:
+  selector:
+    app: hivebox                     # Select pods labeled app=hivebox
+  ports:
+    - protocol: TCP
+      port: 80                      # Port exposed inside the cluster
+      targetPort: 8000              # Port on pod to forward traffic to
