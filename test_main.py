@@ -6,11 +6,9 @@ It includes tests for:
 - Extracting recent temperature data from sensors.
 - Calculating the average temperature from multiple sensors.
 """
-import os
 from unittest.mock import patch
 from datetime import datetime, timezone, timedelta
 from fastapi.testclient import TestClient
-import pytest
 import requests
 from main import app, extract_recent_temperature
 
