@@ -27,7 +27,7 @@ REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "10"))
 box_ids = os.getenv(
     "OPENSENSEMAP_BOX_IDS",
     (
-        "5ade1acf223bd80019a1011c,"
+        "5eba5fbad46fb8001b799786,"
         "5c21ff8f919bf8001adf2488,"
         "5ade1acf223bd80019a1011c"
     ),
@@ -36,8 +36,6 @@ box_ids = os.getenv(
 if not box_ids or box_ids == ["0", "0", "0"]:
     raise ValueError("No valid OpenSenseMap box IDs provided in environment variables.")
 
-VERSION_FILE = os.getenv("VERSION_FILE", "v1.0.0")
-
 # Initialize FastAPI application
 app = FastAPI()
 
@@ -45,16 +43,12 @@ app = FastAPI()
 @app.get("/version")
 def get_app_version() -> str:
     """
-    Reads the application version from env.
+    Reads the application version from the VERSION_FILE environment variable.
 
     Returns:
-        str: The version string, or 'Unknown Version' if the file is not found.
+        str: The version string, or 'Unknown Version' if not set.
     """
-    try:
-        with open(VERSION_FILE, "r", encoding="utf-8") as f:
-            return f.read().strip()
-    except FileNotFoundError:
-        return "Unknown Version"
+    return os.getenv("VERSION_FILE", "Unknown Version")
 
 
 def read_version():

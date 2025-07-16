@@ -12,29 +12,20 @@ from datetime import datetime, timezone, timedelta
 from fastapi.testclient import TestClient
 import pytest
 import requests
-from main import app, extract_recent_temperature, VERSION_FILE
+from main import app, extract_recent_temperature
 
 client = TestClient(app)
 
-@pytest.fixture(autouse=True)
-def cleanup_version_file():
-    ''' Remove VERSION_FILE after each test if it exists '''
-    yield
-    if os.path.exists(VERSION_FILE):
-        os.remove(VERSION_FILE)
-
-def test_get_app_version_file_exists():
-    ''' Test retrieving the application version from VERSION_FILE '''
-    with open(VERSION_FILE, "w", encoding="utf-8") as f:
-        f.write("1.2.3")
+def test_get_app_version_env(monkeypatch):
+    ''' Test retrieving the application version from the VERSION_FILE environment variable '''
+    monkeypatch.setenv("VERSION_FILE", "1.2.3")
     response = client.get("/version")
     assert response.status_code == 200
     assert response.text.strip('"') == "1.2.3"
 
-def test_get_app_version_file_missing():
-    ''' Test retrieving the application version when VERSION_FILE is missing '''
-    if os.path.exists(VERSION_FILE):
-        os.remove(VERSION_FILE)
+def test_get_app_version_env_missing(monkeypatch):
+    ''' Test retrieving the application version when VERSION_FILE is not set '''
+    monkeypatch.delenv("VERSION_FILE", raising=False)
     response = client.get("/version")
     assert response.status_code == 200
     assert response.text.strip('"') == "Unknown Version"
@@ -145,7 +136,7 @@ def test_average_temperature_partial_failures(mock_get):
     now = datetime.now(timezone.utc)
     # First box fails, second and third succeed
     mock_get.side_effect = [
-    requests.RequestException("Network error"),
+        requests.RequestException("Network error"),
         MockResponse({
             "sensors": [{
                 "title": "Temperatur",
