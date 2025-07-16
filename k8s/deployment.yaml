@@ -18,6 +18,7 @@ spec:
       containers:
         - name: hivebox                # Container name inside pod
           image: hivebox:latest         # Docker image to deploy
+          imagePullPolicy: Never
           ports:
             - containerPort: 8000       # Port that container listens on
           env:                         # Environment variables injected into container
