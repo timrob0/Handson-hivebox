@@ -1,5 +1,4 @@
 #!/bin/bash
-# filepath: /Users/timothy.robinson1/Documents/Projects/Handson-hivebox/deploy.sh
 
 set -e
 
