@@ -1,15 +1,35 @@
-# Python
+# Python cache and bytecode
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 
-# Env
+# Test cache
+.pytest_cache/
+
+# Virtual environments
 .venv/
-.env
+venv/
+env/
+ENV/
 
-# pytest
-pytest_cache/
-
-# VSCode
+# VS Code settings
 .vscode/
+
+# macOS
+.DS_Store
+
+# dotenv environment files
+.env
+.env.*
+
+# Coverage reports
+htmlcov/
+.coverage
+
+# Other editor swap files
+*.swp
+*.swo
+
+# Node modules (if ever used)
+node_modules/
