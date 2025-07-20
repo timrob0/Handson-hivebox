@@ -8,8 +8,10 @@ It includes tests for:
 """
 from unittest.mock import patch
 from datetime import datetime, timezone, timedelta
+
 from fastapi.testclient import TestClient
 import requests
+
 from main import app, extract_recent_temperature
 
 client = TestClient(app)
