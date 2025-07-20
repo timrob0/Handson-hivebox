@@ -107,11 +107,20 @@ def average_temperature():
     if not temperatures:
         raise HTTPException(status_code=404, detail="No recent temperature data found")
 
+
     avg_temp = sum(temperatures) / len(temperatures)
+    if avg_temp < 10:
+        status = "Too cold"
+    elif 10 < avg_temp < 36:
+        status = "Normal"
+    else:
+        status = "Too hot"
+
     return {
         "average_temperature": round(avg_temp, 2),
         "unit": "°C",
         "sources_counted": len(temperatures),
+        "status": status,
     }
 
 
