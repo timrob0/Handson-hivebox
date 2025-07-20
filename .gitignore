@@ -33,3 +33,4 @@ htmlcov/
 
 # Node modules (if ever used)
 node_modules/
+activate_venv.sh

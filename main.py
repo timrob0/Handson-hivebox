@@ -15,9 +15,10 @@ Author: [Your Name]
 
 from datetime import datetime, timedelta, timezone
 import os
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Response
 import requests
 from dotenv import load_dotenv
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 load_dotenv()
 
@@ -38,7 +39,6 @@ if not box_ids or box_ids == ["0", "0", "0"]:
 
 # Initialize FastAPI application
 app = FastAPI()
-
 
 @app.get("/version")
 def get_app_version() -> str:
@@ -116,6 +116,14 @@ def average_temperature():
         "unit": "°C",
         "sources_counted": len(temperatures),
     }
+
+
+@app.get("/metrics")
+def metrics():
+    """
+    Exposes Prometheus metrics.
+    """
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
 
 
 def main():
