@@ -15,6 +15,9 @@ kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
 kubectl apply -f k8s/ingress.yaml 2>/dev/null || echo "No ingress.yaml found or applied."
 
+echo "Forcing rollout restart to ensure new image is used..."
+kubectl rollout restart deployment/hivebox
+
 echo "Waiting for pod to be ready..."
 kubectl wait --for=condition=ready pod -l app=hivebox --timeout=120s
 
