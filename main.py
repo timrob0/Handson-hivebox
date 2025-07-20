@@ -25,13 +25,10 @@ load_dotenv()
 # Load environment variables
 OPENSENSEMAP_API_URL = os.getenv("OPENSENSEMAP_API_URL", "https://api.opensensemap.org")
 REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "10"))
+VERSION_FILE = os.getenv("VERSION_FILE", "Unknown Version")
 box_ids = os.getenv(
     "OPENSENSEMAP_BOX_IDS",
-    (
-        "5eba5fbad46fb8001b799786,"
-        "5c21ff8f919bf8001adf2488,"
-        "5ade1acf223bd80019a1011c"
-    ),
+    "5eba5fbad46fb8001b799786,5c21ff8f919bf8001adf2488,5ade1acf223bd80019a1011c"
 ).split(",")
 
 if not box_ids or box_ids == ["0", "0", "0"]:
