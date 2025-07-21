@@ -21,5 +21,5 @@ kubectl rollout restart deployment/hivebox-app
 echo "Waiting for pod to be ready..."
 kubectl wait --for=condition=ready pod -l app=hivebox --timeout=120s
 
-echo "Port-forwarding service to localhost:8000..."
-kubectl port-forward service/hivebox-service 8000:80
+#echo "Port-forwarding service to localhost:8000..."
+#kubectl port-forward service/hivebox-service 8000:80

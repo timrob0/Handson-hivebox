@@ -19,6 +19,7 @@ from fastapi import FastAPI, HTTPException, Response
 import requests
 from dotenv import load_dotenv
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from fastapi.responses import HTMLResponse
 
 load_dotenv()
 
@@ -130,6 +131,30 @@ def metrics():
     Exposes Prometheus metrics.
     """
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+@app.get("/", response_class=HTMLResponse)
+def homepage():
+    """
+    Custom homepage for the FastAPI application.
+    """
+    return """
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Hivebox Application</title>
+    </head>
+    <body>
+        <h1>Welcome to Hivebox</h1>
+        <p>This application provides temperature data and Prometheus metrics.</p>
+        <ul>
+            <li><a href="/docs">API Documentation</a></li>
+            <li><a href="/metrics">Prometheus Metrics</a></li>
+            <li><a href="/temperature">Average Temperature</a></li>
+        </ul>
+    </body>
+    </html>
+    """
 
 
 def main():
