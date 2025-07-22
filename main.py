@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 """
 Main FastAPI application for Hivebox DevOps Hands-On Project.
 
