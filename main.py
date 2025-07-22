@@ -18,10 +18,10 @@ Author: [Your Name]
 from datetime import datetime, timedelta, timezone
 import os
 from fastapi import FastAPI, HTTPException, Response
+from fastapi.responses import HTMLResponse
 import requests
 from dotenv import load_dotenv
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
-from fastapi.responses import HTMLResponse
 
 load_dotenv()
 
