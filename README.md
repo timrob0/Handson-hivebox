@@ -258,3 +258,119 @@ def average_temperature():
 - Needing to add installing of packages in order to get main.py to run (import request, fastapi-cli, etc.)
 - Refactoring the file structure since it was nested in other folders which was messing with linting in GitHub Actions.
 - Setup OpenSSF incorrectly and had to re-read documentation.
+
+## Module 4 - Expand - Constructing a shell (Github actions and CI)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/05120ba5-849a-4dc5-85a8-cdfd8af4e2df" alt="phase4" width="400" />
+</p>
+
+
+## **4.1 Tools**
+
+- Installed and configured **Kind** (Kubernetes IN Docker) for local Kubernetes cluster setup.
+- Installed and configured **kubectl** to manage Kubernetes resources.
+
+## **4.2 Code Implementation**
+
+- Developed FastAPI application with environment variable configuration for SenseBox settings.
+```yaml
+env: # Environment variables injected into container
+
+- name: OPENSENSEMAP_API_URL
+
+value: "https://api.opensensemap.org"
+
+- name: OPENSENSEMAP_BOX_IDS
+
+value: 5eba5fbad46fb8001b799786,5c21ff8f919bf8001adf2488,5ade1acf223bd80019a1011c
+
+- name: VERSION_FILE
+
+value: "v1.0.0 "
+```
+- _Implemented /metrics endpoint exposing default Prometheus metrics for monitoring.
+configured in prometheus-deployment.yaml and below in main.py_
+```yaml
+@app.get("/metrics")
+
+def metrics():
+
+"""
+
+Exposes Prometheus metrics.
+
+"""
+
+return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+```
+- Implemented /temperature endpoint that returns average temperature with a status field indicating:
+	- **Too Cold** if average temperature < 10°C
+	- **Good** if 11°C ≤ average temperature ≤ 36°C
+	- **Too Hot** if average temperature > 37°C
+_ - Super simple, added average calculation, added status with conditionals._
+
+```python
+avg_temp = sum(temperatures) / len(temperatures)
+
+if avg_temp < 10:
+
+status = "Too cold"
+
+elif 10 < avg_temp < 36:
+
+status = "Normal"
+
+else:
+
+status = "Too hot"
+
+  
+
+return {
+
+"average_temperature": round(avg_temp, 2),
+
+"unit": "°C",
+
+"sources_counted": len(temperatures),
+
+"status": status,
+
+}
+```
+_- Wrote comprehensive integration tests for the API using pytest and FastAPI test client.
+  tests in test_main.py and put into github actions._
+
+## **4.3 Containerization and Kubernetes Manifests**
+
+- Created KIND cluster configuration to run Kubernetes with Ingress-NGINX controller for routing.
+_installed ingess-nginx onto container and mapped ports to localdevice._
+
+- Authored Kubernetes manifests including Deployment, Service, and Ingress resources to deploy the application.
+_configured in ./k8/_
+
+## **4.4 Continuous Integration (CI)**
+
+- Configured CI workflows to run integration tests automatically.
+- _All configured in Github Actions._
+
+- Integrated SonarQube for code quality, security, and static analysis with Quality Gate checks
+- _SonarQube in Github actions._
+
+- Added Terrascan scanning to detect Kubernetes manifest misconfigurations and vulnerabilities.
+- _Terrascan seems to be unsupported. Have instead switched to Trivy._
+
+- Applied best practices for CI including test automation and security scanning.
+- _as above_
+
+## **4.5 Continuous Delivery (CD)**
+
+- Created GitHub Actions workflow for Continuous Delivery.
+- _githubActions with pylint, hadolint, and pytest, supply-chain-scorecard,SonarQube analysis, and trivy._
+
+- Automated release process by building and pushing versioned Docker images to GitHub Container Registry (GHCR).
+- _Github aciton to auto deploy to tag :latest but if versioning tags are added it will deploy as a release._
+
+- Enabled tagging and version management for Docker images to maintain clear versioning and rollback capability.
+- _As above._
