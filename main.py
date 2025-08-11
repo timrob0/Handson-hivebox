@@ -19,11 +19,13 @@ from datetime import datetime, timedelta, timezone
 import os
 from fastapi import FastAPI, HTTPException, Response
 from fastapi.responses import HTMLResponse
+import valkey
 import requests
 from dotenv import load_dotenv
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 load_dotenv()
+
 
 # Load environment variables
 OPENSENSEMAP_API_URL = os.getenv("OPENSENSEMAP_API_URL", "https://api.opensensemap.org")
@@ -34,11 +36,28 @@ box_ids = os.getenv(
     "5eba5fbad46fb8001b799786,5c21ff8f919bf8001adf2488,5ade1acf223bd80019a1011c"
 ).split(",")
 
-if not box_ids or box_ids == ["0", "0", "0"]:
-    raise ValueError("No valid OpenSenseMap box IDs provided in environment variables.")
+# Valkey (Redis-compatible) configuration
+VALKEY_HOST = os.getenv("VALKEY_HOST", "valkey")
+VALKEY_PORT = int(os.getenv("VALKEY_PORT", "6379"))
+
+# Initialize Valkey client
+valkey_client = valkey.Valkey(host=VALKEY_HOST, port=VALKEY_PORT, decode_responses=True)
 
 # Initialize FastAPI application
 app = FastAPI()
+
+@app.get("/cache-test")
+def cache_test():
+    """
+    Test endpoint to verify Valkey connectivity.
+    Sets and gets a value from Valkey.
+    """
+    valkey_client.set("hello", "world")
+    value = valkey_client.get("hello")
+    return {"valkey_value": value}
+
+if not box_ids or box_ids == ["0", "0", "0"]:
+    raise ValueError("No valid OpenSenseMap box IDs provided in environment variables.")
 
 @app.get("/version")
 def get_app_version() -> str:

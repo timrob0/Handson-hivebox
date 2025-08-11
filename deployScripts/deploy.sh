@@ -13,6 +13,8 @@ kind load docker-image hivebox:latest --name $CLUSTER_NAME
 echo "Applying Kubernetes manifests..."
 kubectl apply -f k8s/deployment.yaml
 kubectl apply -f k8s/service.yaml
+kubectl apply -f k8s/valkey-deployment.yaml
+kubectl apply -f k8s/valkey-service.yaml
 kubectl apply -f k8s/ingress.yaml 2>/dev/null || echo "No ingress.yaml found or applied."
 
 echo "Forcing rollout restart to ensure new image is used..."
